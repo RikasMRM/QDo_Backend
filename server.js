@@ -18,9 +18,9 @@ app.get("/", (req, res) => {
   res.send("Api is working");
 });
 
-const prot = process.env.PORT;
+const port = process.env.PORT;
 
 app.listen(
-  prot,
+  port,
   console.log(`Server running in ${process.env.NODE_ENV} mode on port ${prot}`)
 );
