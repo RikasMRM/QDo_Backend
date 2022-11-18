@@ -123,3 +123,7 @@ yarn.lock
 main.scss
 .scannerwork
 pnpm-lock.yaml
+
+# ignore all uploaded files except uploadinit.txt
+/uploads/*
+!/uploads/uploadinit.txt

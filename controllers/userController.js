@@ -7,20 +7,29 @@ import { generateToken, decodeJWTToken } from "../utils/handleJwtToken.js";
 // @access Public
 const registerUser = asyncHandler(async (req, res) => {
   if (req.body) {
-    const user = new User(req.body);
+    const { email } = req.body;
+    const chk_user_existence = await User.findOne({ email: email });
 
-    await user
-      .save()
-      .then((data) => {
-        res.status(201).send({
-          success: true,
-          message: "User Registered Successfully!",
-        });
-      })
-      .catch((error) => {
-        console.log(error);
-        res.status(200).send({ success: false, message: error.message });
+    if (chk_user_existence) {
+      res.status(200).send({
+        success: false,
+        message: `There's a user already registered with that mail`,
       });
+    } else {
+      const user = new User(req.body);
+      await user
+        .save()
+        .then((data) => {
+          res.status(201).send({
+            success: true,
+            message: "User Registered Successfully!",
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+          res.status(200).send({ success: false, message: error.message });
+        });
+    }
   } else {
     res.status(200).send({ success: false, message: "Error" });
   }
