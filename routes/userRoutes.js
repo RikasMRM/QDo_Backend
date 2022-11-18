@@ -10,6 +10,9 @@ router.route('/register').post(userController.registerUser)
 //@Public Login user
 router.route('/login').post(userController.loginUser)
 
+// @Public Validate user token
+router.route('/token/:tokenID').get(userController.validateUserToken)
+
 //Auth User
 router.route('/:id').get(protect, userController.getUserProfileData)
 

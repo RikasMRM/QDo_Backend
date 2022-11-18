@@ -1,10 +1,11 @@
 import User from "../model/userModel.js";
-import { generateToken } from "../utils/handleJwtToken.js";
+import asyncHandler from "express-async-handler";
+import { generateToken, decodeJWTToken } from "../utils/handleJwtToken.js";
 
 // @desc Register new user
 // @route Post /api/users/register
 // @access Public
-const registerUser = async (req, res) => {
+const registerUser = asyncHandler(async (req, res) => {
   if (req.body) {
     const user = new User(req.body);
 
@@ -23,12 +24,12 @@ const registerUser = async (req, res) => {
   } else {
     res.status(200).send({ success: false, message: "Error" });
   }
-};
+});
 
 // @desc User Login
 // @route Post /api/users/login
 // @access Public
-const loginUser = async (req, res) => {
+const loginUser = asyncHandler(async (req, res) => {
   if (req.body) {
     try {
       const email = req.body.email;
@@ -70,9 +71,12 @@ const loginUser = async (req, res) => {
   } else {
     res.status(200).send({ success: false, message: "Error" });
   }
-};
+});
 
-const getUserProfileData = async (req, res) => {
+// @desc User Profile Data
+// @route Post /api/users/:id
+// @access Auth User
+const getUserProfileData = asyncHandler(async (req, res) => {
   const user = await User.findById(req.params.id);
   if (user) {
     res.json({
@@ -84,10 +88,38 @@ const getUserProfileData = async (req, res) => {
     res.status(200).send({ success: false, message: "User not found!" });
     throw new Error("User cannot be found");
   }
-};
+});
+
+// @desc User Validate Token
+// @route Post /api/users/token/:tokenID
+// @access Public
+const validateUserToken = asyncHandler(async (req, res) => {
+  const userToken = req.params.tokenID;
+  const tokenResult = decodeJWTToken(userToken);
+
+  if (tokenResult) {
+    const user = await User.findById(tokenResult.id);
+    if (user) {
+      res.status(200).send({
+        success: true,
+        message: "Not Expired!",
+        user: {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+        },
+      });
+    } else {
+      res.status(401).send({ success: false, message: "Unauthorized!" });
+    }
+  } else {
+    res.status(401).send({ success: false, message: "Unauthorized!" });
+  }
+});
 
 export default {
   registerUser,
   loginUser,
   getUserProfileData,
+  validateUserToken,
 };
