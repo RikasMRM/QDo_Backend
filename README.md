@@ -43,11 +43,6 @@ Modify source code in the `src/` folder.
 The environment variables can be found and modified in the `.env` file.
 
 MONGO_URI = 
-# Port
-PORT = # default 666
-
+PORT = 
 NODE_ENV =
-# JWT
 JWT_SECRET =
-# URL frontend
-FRONTEND_URL = # default http://localhost:777
