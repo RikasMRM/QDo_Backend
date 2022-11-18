@@ -2,6 +2,7 @@ import express from "express";
 import taskController from "../controllers/taskController.js";
 import { protect } from "../middleware/authMiddleware.js";
 import { fileUpload } from "../middleware/fileUploadMiddleware.js";
+import cors from "cors";
 
 const router = express.Router();
 
@@ -19,5 +20,13 @@ router.route("/:id").put(protect, taskController.updateTaskStatus);
 
 //@Auth user delete task
 router.route("/:id").delete(protect, taskController.deleteTask);
+
+// View/Download task attachment
+router.route("/download/:id/:token").get(
+  cors({
+    exposedHeaders: ["Content-Disposition"],
+  }),
+  taskController.downloadAttachment
+);
 
 export default router;

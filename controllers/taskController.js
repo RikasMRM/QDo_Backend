@@ -1,6 +1,10 @@
 import asyncHandler from "express-async-handler";
 import Task from "../model/taskModel.js";
+import User from "../model/userModel.js";
 import mongoose from "mongoose";
+import fs from "fs";
+import { decodeJWTToken } from "../utils/handleJwtToken.js";
+
 const ObjectId = mongoose.Types.ObjectId;
 
 // @desc Add new task
@@ -172,10 +176,70 @@ const viewSingleTask = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc Download/View task attachment
+// @route Get /api/tasks/download/:id/:token
+// @access Auth User
+const downloadAttachment = asyncHandler(async (req, res) => {
+  try {
+    let taskID = req.params.id;
+
+    // Validate user token
+    let userToken = req.params.token;
+    const tokenDecrypt = decodeJWTToken(userToken);
+
+    if (tokenDecrypt) {
+      const user = await User.findById(tokenDecrypt.id).select("-password");
+
+      if (user) {
+        const taskResponse = await Task.findById(taskID);
+        if (taskResponse) {
+          try {
+            const fileName = taskResponse.fName;
+            const fileURL = "./" + taskResponse.filePath;
+            const stream = fs.createReadStream(fileURL);
+            res.set({
+              "Content-Disposition": `attachment; filename=${fileName}`,
+            });
+            stream.pipe(res);
+          } catch (e) {
+            console.error(e);
+            res.status(200).send({
+              success: false,
+              message: "Error! Can't download attachment.",
+            });
+          }
+        } else {
+          res.status(200).send({
+            success: false,
+            message: "Error! Can't download attachment.",
+          });
+        }
+      } else {
+        res.status(401).send({
+          success: false,
+          message: "Error! Unauthorized!",
+        });
+      }
+    } else {
+      res.status(401).send({
+        success: false,
+        message: "Error! Unauthorized!",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(200).send({
+      success: false,
+      message: "Error!",
+    });
+  }
+});
+
 export default {
   createNewTask,
   getTasksByUser,
   updateTaskStatus,
   deleteTask,
   viewSingleTask,
+  downloadAttachment,
 };
