@@ -11,7 +11,13 @@ router.route("/").post(protect, fileUpload, taskController.createNewTask);
 //@Auth user view tasks
 router.route("/").get(protect, taskController.getTasksByUser);
 
-//@Auth user view tasks
+//@Auth user view task
+router.route("/:id").get(protect, taskController.viewSingleTask);
+
+//@Auth user update task(name, status/description one or many)
 router.route("/:id").put(protect, taskController.updateTaskStatus);
+
+//@Auth user delete task
+router.route("/:id").delete(protect, taskController.deleteTask);
 
 export default router;

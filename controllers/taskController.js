@@ -66,18 +66,23 @@ const updateTaskStatus = asyncHandler(async (req, res) => {
     const taskID = req.params.id;
 
     //get user's task by id
-    const task = await Task.find({
+    const tasks = await Task.find({
       user: ObjectId(userID),
       _id: ObjectId(taskID),
     });
 
-    if (task) {
+    if (tasks.length > 0) {
       const query = { _id: taskID };
-      const update = {
-        status: req.body.status,
+      let update_data = {
+        status: req.body.status == null ? tasks[0].status : req.body.status,
+        name: req.body.name == null ? tasks[0].name : req.body.name,
+        description:
+          req.body.description == null
+            ? tasks[0].description
+            : req.body.description,
       };
 
-      await Task.updateOne(query, update).then((result) => {
+      await Task.updateOne(query, update_data).then((result) => {
         res.status(200).send({
           success: true,
           message: "Task Status Updated Successfully!",
@@ -98,8 +103,79 @@ const updateTaskStatus = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc Delete user tasks
+// @route Delete /api/tasks/:id
+// @access Auth User
+const deleteTask = asyncHandler(async (req, res) => {
+  try {
+    const userID = req.user._id;
+    const taskID = req.params.id;
+
+    //get user's task by id
+    const task = await Task.find({
+      user: ObjectId(userID),
+      _id: ObjectId(taskID),
+    });
+
+    //if task is user's task
+    if (task.length > 0) {
+      const query = { _id: taskID };
+      await Task.deleteOne(query).then((data) => {
+        res
+          .status(200)
+          .send({ success: true, message: "Task Deleted Successfully!" });
+      });
+    } else {
+      res.status(200).send({
+        success: false,
+        message: "Task not found",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(200).send({
+      success: false,
+      message: "Error!",
+    });
+  }
+});
+
+// @desc View user tasks
+// @route Get /api/tasks/:id
+// @access Auth User
+const viewSingleTask = asyncHandler(async (req, res) => {
+  try {
+    const userID = req.user._id;
+    const taskID = req.params.id;
+
+    //get user's task by id
+    const task = await Task.find({
+      user: ObjectId(userID),
+      _id: ObjectId(taskID),
+    });
+
+    //if task is user's task
+    if (task) {
+      res.json(task);
+    } else {
+      res.status(200).send({
+        success: false,
+        message: "Task not found",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(200).send({
+      success: false,
+      message: "Error!",
+    });
+  }
+});
+
 export default {
   createNewTask,
   getTasksByUser,
   updateTaskStatus,
+  deleteTask,
+  viewSingleTask,
 };
