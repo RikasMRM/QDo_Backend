@@ -13,7 +13,8 @@ const taskSchema = mongoose.Schema(
     status: {
       type: String,
       required: false,
-      default: "Todo", // Todo | Inprogress | Done
+      default: "Todo",
+      // Todo | Inprogress | Done
     },
     user: {
       type: mongoose.Schema.Types.ObjectId,
