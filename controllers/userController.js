@@ -1,5 +1,5 @@
 import User from "../model/userModel.js";
-import generateToken from "../utils/handleJwtToken.js";
+import { generateToken } from "../utils/handleJwtToken.js";
 
 // @desc Register new user
 // @route Post /api/users/register
@@ -72,7 +72,22 @@ const loginUser = async (req, res) => {
   }
 };
 
+const getUserProfileData = async (req, res) => {
+  const user = await User.findById(req.params.id);
+  if (user) {
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+    });
+  } else {
+    res.status(200).send({ success: false, message: "User not found!" });
+    throw new Error("User cannot be found");
+  }
+};
+
 export default {
   registerUser,
   loginUser,
+  getUserProfileData,
 };
