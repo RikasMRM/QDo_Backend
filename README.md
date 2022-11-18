@@ -25,7 +25,7 @@ npm start
 
 Modify source code in the `src/` folder.
 
-## Project structure
+### Project structure
 
 ```
 .
@@ -38,11 +38,16 @@ Modify source code in the `src/` folder.
 ├── utils               
 └── server.js
 ```
-## Environment Variables
+### Environment Variables
 
 The environment variables can be found and modified in the `.env` file.
-
+```bash
 MONGO_URI = 
 PORT = 
 NODE_ENV =
 JWT_SECRET =
+```
+
+### API Endpoints
+
+List of available routes:
