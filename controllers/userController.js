@@ -1,7 +1,8 @@
 import User from "../model/userModel.js";
+import generateToken from "../utils/handleJwtToken.js";
 
 // @desc Register new user
-// @route Post /api/users/
+// @route Post /api/users/register
 // @access Public
 const registerUser = async (req, res) => {
   if (req.body) {
@@ -24,6 +25,54 @@ const registerUser = async (req, res) => {
   }
 };
 
+// @desc User Login
+// @route Post /api/users/login
+// @access Public
+const loginUser = async (req, res) => {
+  if (req.body) {
+    try {
+      const email = req.body.email;
+      const password = req.body.password;
+
+      if (email && password) {
+        //get user data
+        var userData = await User.findOne({ email: email });
+
+        if (userData != null) {
+          if (userData && (await userData.matchPassword(password))) {
+            res.json({
+              _id: userData._id,
+              name: userData.name,
+              email: userData.email,
+              token: generateToken(userData._id),
+            });
+          } else {
+            res.status(200).send({
+              success: false,
+              message: "Invalid Credentials!",
+            });
+          }
+        } else {
+          res.status(200).send({
+            success: false,
+            message: "User Not Found!",
+          });
+        }
+      } else {
+        res
+          .status(200)
+          .send({ success: false, message: "Email or Password not found!" });
+      }
+    } catch (e) {
+      console.log(e);
+      res.status(200).send({ success: false, message: "Exceptional Error" });
+    }
+  } else {
+    res.status(200).send({ success: false, message: "Error" });
+  }
+};
+
 export default {
   registerUser,
+  loginUser,
 };
