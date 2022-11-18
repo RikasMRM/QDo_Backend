@@ -1,6 +1,6 @@
 # QDo_Backend
 
-Backend Source code of ToDo list Web Application. 
+Backend Source code of `QDo` ToDo list Web Application. 
 
 QDo is a web application to manage todo lists with different status(Todo, In Progress and Done)
 
@@ -16,7 +16,7 @@ git clone https://github.com/RikasMRM/QDo_Backend.git
 npm install
 ```
 
-Start realtime building with Webpack 2 and webserver with NodeJS & Express. 
+Running in development: 
 
 ```bash
 ## Windows 
@@ -25,7 +25,7 @@ npm start
 
 Modify source code in the `src/` folder.
 
-### Project structure
+## Project structure
 
 ```
 .
@@ -38,3 +38,16 @@ Modify source code in the `src/` folder.
 ├── utils               
 └── server.js
 ```
+## Environment Variables
+
+The environment variables can be found and modified in the `.env` file.
+
+MONGO_URI = 
+# Port
+PORT = # default 666
+
+NODE_ENV =
+# JWT
+JWT_SECRET =
+# URL frontend
+FRONTEND_URL = # default http://localhost:777
