@@ -12,7 +12,8 @@ const ObjectId = mongoose.Types.ObjectId;
 // @access Auth User
 const createNewTask = asyncHandler(async (req, res) => {
   try {
-    const { name, description, filePath, fileName, user } = req.body;
+    const { name, description, filePath, fileName } = req.body;
+    const user = req.user._id;
 
     //save to database
     const task = await Task.create({
@@ -51,6 +52,50 @@ const getTasksByUser = asyncHandler(async (req, res) => {
     const tasks = await Task.find({
       user: ObjectId(userID),
     });
+    res.json(tasks);
+  } catch (error) {
+    console.log(error);
+    res.status(200).send({
+      success: false,
+      message: "Error!",
+    });
+  }
+});
+
+// @desc Get user tasks filtered
+// @route Get /api/tasks/filter
+// @access Auth User
+const filterTasksData = asyncHandler(async (req, res) => {
+  try {
+    const userID = req.user._id;
+    const { status, endDate, startDate } = req.body;
+
+    let query = { user: ObjectId(userID) };
+
+    if (status && startDate) {
+      query.status = status;
+      let q2 = {
+        createdAt: {
+          $gte: new Date(startDate),
+          $lt: new Date(endDate),
+        },
+      };
+      query.createdAt = q2.createdAt;
+    } else {
+      if (startDate && endDate) {
+        let q2 = {
+          createdAt: {
+            $gte: new Date(startDate),
+            $lt: new Date(endDate),
+          },
+        };
+        query.createdAt = q2.createdAt;
+      } else {
+        query.status = status;
+      }
+    }
+
+    const tasks = await Task.find(query);
     res.json(tasks);
   } catch (error) {
     console.log(error);
@@ -194,7 +239,7 @@ const downloadAttachment = asyncHandler(async (req, res) => {
         const taskResponse = await Task.findById(taskID);
         if (taskResponse) {
           try {
-            const fileName = taskResponse.fName;
+            const fileName = taskResponse.fileName;
             const fileURL = "./" + taskResponse.filePath;
             const stream = fs.createReadStream(fileURL);
             res.set({
@@ -217,7 +262,7 @@ const downloadAttachment = asyncHandler(async (req, res) => {
       } else {
         res.status(401).send({
           success: false,
-          message: "Error! Unauthorized!",
+          message: "Error! No user found!",
         });
       }
     } else {
@@ -242,4 +287,5 @@ export default {
   deleteTask,
   viewSingleTask,
   downloadAttachment,
+  filterTasksData,
 };

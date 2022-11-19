@@ -12,6 +12,9 @@ router.route("/").post(protect, fileUpload, taskController.createNewTask);
 //@Auth user view tasks
 router.route("/").get(protect, taskController.getTasksByUser);
 
+//@Auth user filter tasks
+router.route("/filter").post(protect, taskController.filterTasksData);
+
 //@Auth user view task
 router.route("/:id").get(protect, taskController.viewSingleTask);
 
