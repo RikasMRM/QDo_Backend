@@ -51,6 +51,7 @@ const loginUser = asyncHandler(async (req, res) => {
         if (userData != null) {
           if (userData && (await userData.matchPassword(password))) {
             res.json({
+              success: true,
               _id: userData._id,
               name: userData.name,
               email: userData.email,
