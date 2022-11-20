@@ -73,7 +73,7 @@ typings/
 .env.dev
 .env.prod
 .env.test
-.env
+# .env
 .env.uiadmin.dev
 .env.uiadmin.test
 .env.uiadmin.preprod
